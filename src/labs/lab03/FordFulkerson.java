@@ -1,6 +1,6 @@
-package lab3;
+package labs.lab03;
 
-import lab01.GraphInterface;
+import labs.lab01.GraphInterface;
 
 public class FordFulkerson {
 

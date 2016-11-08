@@ -1,7 +1,8 @@
-package lab02;
+package labs.lab02;
 
 import java.util.LinkedList;
-import lab01.GraphInterface;
+
+import labs.lab01.GraphInterface;
 
 
 public class WarshalFloydAlgorithm {

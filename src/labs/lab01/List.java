@@ -1,4 +1,4 @@
-package lab01;
+package labs.lab01;
 
 public class List {
 	int N = 0;

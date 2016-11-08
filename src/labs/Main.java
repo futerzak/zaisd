@@ -1,9 +1,13 @@
-package lab01;
+package labs;
 
 import java.io.IOException;
 import java.util.LinkedList;
-import lab02.WarshalFloydAlgorithm;
-import lab3.FordFulkerson;
+
+import labs.lab01.GraphInterface;
+import labs.lab01.ListGraph;
+import labs.lab01.MatrixGraph;
+import labs.lab02.WarshalFloydAlgorithm;
+import labs.lab03.FordFulkerson;
 
 
 public class Main {
