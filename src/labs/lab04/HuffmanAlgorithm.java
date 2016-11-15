@@ -37,11 +37,19 @@ public class HuffmanAlgorithm {
     private static HashMap<String, Character> codeToChar;
 
 
-    public static void runAlgorithm(String text) throws FileNotFoundException {
+    private String sourceText;
+    private String compressedString;
+    private String decompressedString;
+
+    public HuffmanAlgorithm(String sourceText) {
+        this.sourceText = sourceText;
+    }
+
+    private void runAlgorithm() throws FileNotFoundException {
 
         HashMap<Character, Integer> dict = new HashMap<>();
-        for (int i = 0; i < text.length(); i++) {
-            char a = text.charAt(i);
+        for (int i = 0; i < this.sourceText.length(); i++) {
+            char a = this.sourceText.charAt(i);
             if (dict.containsKey(a))
                 dict.put(a, dict.get(a) + 1);
             else
@@ -97,33 +105,62 @@ public class HuffmanAlgorithm {
     }
 
 
-    public static String compress(String s) {
+    public HuffmanAlgorithm compress() throws FileNotFoundException {
+
+        if(this.sourceText == null) {
+            System.out.println("Brak danych do kompresji");
+            return this;
+        }
+        this.runAlgorithm();
+
         String c = "";
-        for (int i = 0; i < s.length(); i++)
-            c = c + charToCode.get(s.charAt(i));
-        return c;
+        for (int i = 0; i < this.sourceText.length(); i++) {
+            c += charToCode.get(this.sourceText.charAt(i));
+        }
+        this.compressedString = c;
+        return this;
     }
 
 
-    public static String decompress(String s) {
+    public HuffmanAlgorithm decompress() {
         String temp = "";
         String result = "";
-        for (int i = 0; i < s.length(); i++) {
-            temp = temp + s.charAt(i);
+        if(this.compressedString == null) {
+            System.out.println("Brak danych do dekompresji");
+            return this;
+        }
+        for (int i = 0; i < this.compressedString.length(); i++) {
+            temp = temp + this.compressedString.charAt(i);
             Character c = codeToChar.get(temp);
             if (c != null && c != 0) {
                 result = result + c;
                 temp = "";
             }
         }
-        return result;
+        this.decompressedString = result;
+        return this;
     }
 
-    public static void saveResult(String result, String fileName) throws IOException {
+    public String getCompressedString() {
+        return compressedString;
+    }
 
-        PrintWriter oFile = new PrintWriter(fileName);
+    public HuffmanAlgorithm setCompressedString(String compressedString) {
+        this.compressedString = compressedString;
+        return this;
+    }
 
-        oFile.println(result);
-        oFile.close();
+    public String getDecompressedString() {
+        return decompressedString;
+    }
+
+    public HuffmanAlgorithm setDecompressedString(String decompressedString) {
+        this.decompressedString = decompressedString;
+        return this;
+    }
+
+    public HuffmanAlgorithm setSourceText(String sourceText) {
+        this.sourceText = sourceText;
+        return this;
     }
 }

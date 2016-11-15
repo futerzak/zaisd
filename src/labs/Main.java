@@ -12,81 +12,88 @@ import labs.lab01.MatrixGraph;
 import labs.lab02.WarshalFloydAlgorithm;
 import labs.lab03.FordFulkerson;
 import labs.lab04.HuffmanAlgorithm;
+import labs.lab04.SaveFileHelper;
 
 
 public class Main {
 	public static void main(String[] args) throws NumberFormatException, IOException{
 
-        switch (chooseAlgorithm()) {
-            case "1":
-                System.out.println("Czekaj ...");
-                /* Warshal-Floyd */
-                warshalFloydRun("src/grafWarshalaFloyda.txt");
-		        /* end Warshal-Floyd */
-                break;
-            case "2":
-                System.out.println("Czekaj ...");
-                /* Ford-Fulkerson */
-                fordFulkersonRun("src/duzy_graf.txt");
-		        /* end Ford-Fulkerson */
-                break;
-            case "3":
-                System.out.println("Czekaj ...");
-                /* Huffman */
-
-                String text;
-                text = new Scanner(new File("src/seneca.txt")).useDelimiter("\\A").next();
-
-                huffman(text, "src/compressed.dat", "src/decompressed.dat");
-		        /* end Huffman */
-                break;
-            default:
-                chooseAlgorithm();
-                break;
-        }
-
-		
+    chooseAlgorithm();
 	}
 
-    private static String chooseAlgorithm() {
+    private static void chooseAlgorithm() {
 
         System.out.println("Wybierz jedną z opcji: ");
         System.out.println("1 - Algorytm Warshala-Floyda");
         System.out.println("2 - Algorytm Forda-Fulkersona");
         System.out.println("3 - Algorytm Huffmana");
-        System.out.println("Wybór: 3");
+        System.out.print("Wybór: ");
 
         Scanner in = new Scanner(System.in);
-        return in.nextLine();
+        String choose =  in.nextLine();
+
+        System.out.println("Czekaj ...");
+        switch (choose) {
+            case "1":
+                /* Warshal-Floyd */
+                warshalFloydRun("src/grafWarshalaFloyda.txt");
+		        /* end Warshal-Floyd */
+                break;
+            case "2":
+                /* Ford-Fulkerson */
+                fordFulkersonRun("src/duzy_graf.txt");
+		        /* end Ford-Fulkerson */
+                break;
+            case "3":
+                /* Huffman */
+
+                String text = "";
+                try {
+                    text = new Scanner(new File("src/seneca.txt")).useDelimiter("\\A").next();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                huffman(text, "src/compressed.dat", "src/decompressed.txt");
+		        /* end Huffman */
+                break;
+            default:
+                System.out.println("Dokonano złego wyboru!");
+                chooseAlgorithm();
+                break;
+        }
     }
 
-    private static void huffman(String text, String compressionFile, String decompressionFile) {
+    private static void huffman(String sourceTextContent, String compressionFile, String decompressionFile) {
 
-		try {
-			HuffmanAlgorithm.runAlgorithm(text);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		String compressedString = HuffmanAlgorithm.compress(text);
+        HuffmanAlgorithm huffmanAlgorithm = new HuffmanAlgorithm(sourceTextContent);
+
+        try {
+            huffmanAlgorithm.compress();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+        String compressedString = huffmanAlgorithm.getCompressedString();
 		System.out.println("Kompresja:\n" + compressedString);
 		try {
-            HuffmanAlgorithm.saveResult(compressedString, compressionFile);
+            SaveFileHelper.save(compressionFile, huffmanAlgorithm.getCompressedString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		int l_origin = text.length()*8;
+		int l_origin = sourceTextContent.length()*8;
 		int l_compressed = compressedString.length();
 		System.out.print("Stopień kompresji: " + (float)(l_origin - l_compressed) / l_origin);
 
-		String decompressedString = HuffmanAlgorithm.decompress(compressedString);
+		huffmanAlgorithm.decompress();
 
         try {
-            HuffmanAlgorithm.saveResult(decompressedString, decompressionFile);
+            SaveFileHelper.save(decompressionFile, huffmanAlgorithm.getDecompressedString());
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 	
 	private static void warshalFloyd(GraphInterface g, GraphInterface g2) {
