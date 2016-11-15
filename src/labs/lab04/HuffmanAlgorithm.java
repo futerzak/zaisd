@@ -32,9 +32,9 @@ class FrequencyComparator implements Comparator<Node> {
 
 public class HuffmanAlgorithm {
 
-    private static PriorityQueue<Node> q;
-    private static HashMap<Character, String> charToCode;
-    private static HashMap<String, Character> codeToChar;
+    private PriorityQueue<Node> q;
+    private HashMap<Character, String> charToCode;
+    private HashMap<String, Character> codeToChar;
 
 
     private String sourceText;
@@ -57,10 +57,10 @@ public class HuffmanAlgorithm {
         }
 
 
-        q = new PriorityQueue<>(100, new FrequencyComparator());
+        this.q = new PriorityQueue<>(100, new FrequencyComparator());
         int n = 0;
         for (Character c : dict.keySet()) {
-            q.add(new Node(c, dict.get(c)));
+            this.q.add(new Node(c, dict.get(c)));
             n++;
         }
 
@@ -69,27 +69,27 @@ public class HuffmanAlgorithm {
 
     }
 
-    private static Node createTree(int n) {
+    private Node createTree(int n) {
         Node x, y;
         for (int i = 1; i <= n - 1; i++) {
             Node z = new Node();
-            z.left = x = q.poll();
-            z.right = y = q.poll();
+            z.left = x = this.q.poll();
+            z.right = y = this.q.poll();
             z.freq = x.freq + y.freq;
-            q.add(z);
+            this.q.add(z);
         }
-        return q.poll();
+        return this.q.poll();
     }
 
 
-    private static void createAlgorithmTable(Node root) {
-        charToCode = new HashMap<>();
-        codeToChar = new HashMap<>();
+    private void createAlgorithmTable(Node root) {
+        this.charToCode = new HashMap<>();
+        this.codeToChar = new HashMap<>();
         postorder(root, "");
     }
 
     // This method is used to traverse from ROOT-to-LEAVES
-    private static void postorder(Node n, String s) {
+    private void postorder(Node n, String s) {
         if (n == null) {
             return;
         }
@@ -99,8 +99,8 @@ public class HuffmanAlgorithm {
 
         if (!Character.toString(n.ch).equals("&#092;&#048;")) {
             //  System.out.println("{" + n.ch + ":" + s + "}");
-            charToCode.put(n.ch, s);
-            codeToChar.put(s, n.ch);
+            this.charToCode.put(n.ch, s);
+            this.codeToChar.put(s, n.ch);
         }
     }
 
