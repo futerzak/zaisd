@@ -1,50 +1,95 @@
 package labs;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 import labs.lab01.GraphInterface;
 import labs.lab01.ListGraph;
 import labs.lab01.MatrixGraph;
 import labs.lab02.WarshalFloydAlgorithm;
 import labs.lab03.FordFulkerson;
+import labs.lab04.HuffmanAlgorithm;
 
 
 public class Main {
 	public static void main(String[] args) throws NumberFormatException, IOException{
-		String path = "src/grafWarshalaFloyda.txt";
-		GraphInterface g = null;
-		GraphInterface g2 = null;
-		try {
-			g = new MatrixGraph(path, 1000, 10000);
-			g2 = new ListGraph(path, 1000, 10000);
 
+        switch (chooseAlgorithm()) {
+            case "1":
+                System.out.println("Czekaj ...");
+                /* Warshal-Floyd */
+                warshalFloydRun("src/grafWarshalaFloyda.txt");
+		        /* end Warshal-Floyd */
+                break;
+            case "2":
+                System.out.println("Czekaj ...");
+                /* Ford-Fulkerson */
+                fordFulkersonRun("src/duzy_graf.txt");
+		        /* end Ford-Fulkerson */
+                break;
+            case "3":
+                System.out.println("Czekaj ...");
+                /* Huffman */
+
+                String text;
+                text = new Scanner(new File("src/seneca.txt")).useDelimiter("\\A").next();
+
+                huffman(text, "src/compressed.dat", "src/decompressed.dat");
+		        /* end Huffman */
+                break;
+            default:
+                chooseAlgorithm();
+                break;
+        }
+
+		
+	}
+
+    private static String chooseAlgorithm() {
+
+        System.out.println("Wybierz jedną z opcji: ");
+        System.out.println("1 - Algorytm Warshala-Floyda");
+        System.out.println("2 - Algorytm Forda-Fulkersona");
+        System.out.println("3 - Algorytm Huffmana");
+        System.out.println("Wybór: 3");
+
+        Scanner in = new Scanner(System.in);
+        return in.nextLine();
+    }
+
+    private static void huffman(String text, String compressionFile, String decompressionFile) {
+
+		try {
+			HuffmanAlgorithm.runAlgorithm(text);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		String compressedString = HuffmanAlgorithm.compress(text);
+		System.out.println("Kompresja:\n" + compressedString);
+		try {
+            HuffmanAlgorithm.saveResult(compressedString, compressionFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		warshalFloyd(g, g2);
-		
-		path = "src/duzy_graf.txt";
-		GraphInterface flow = null;
-		
-		try {
-			flow = new MatrixGraph(path, 1000, 10000);
-		}catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		int s = 109;
-		int t = 609;
-		
-		fordFulkerson(flow, s, t);
-		
-		
-	}
+
+		int l_origin = text.length()*8;
+		int l_compressed = compressedString.length();
+		System.out.print("Stopień kompresji: " + (float)(l_origin - l_compressed) / l_origin);
+
+		String decompressedString = HuffmanAlgorithm.decompress(compressedString);
+
+        try {
+            HuffmanAlgorithm.saveResult(decompressedString, decompressionFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 	
-	
-	
-	public static void warshalFloyd(GraphInterface g, GraphInterface g2) {
+	private static void warshalFloyd(GraphInterface g, GraphInterface g2) {
 		int startNode = 1;
 		int endNode = 20;
 		
@@ -81,9 +126,40 @@ public class Main {
 		System.out.println("R = Tlista / Tmacierz = " + (float) timeList/timeMatrix);
 	}
 
-	public static void fordFulkerson(GraphInterface g, int s, int t) {
+	private static void warshalFloydRun(String path) {
+
+        GraphInterface g = null;
+        GraphInterface g2 = null;
+        try {
+            g = new MatrixGraph(path, 1000, 10000);
+            g2 = new ListGraph(path, 1000, 10000);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        warshalFloyd(g, g2);
+    }
+
+	private static void fordFulkerson(GraphInterface g, int s, int t) {
 		FordFulkerson ff = new FordFulkerson();
 		g.printGraph();
 		System.out.println("Maxymalny przepływ: " + ff.resolve(g, s, t));
 	}
+
+	private static void fordFulkersonRun(String path) {
+
+        GraphInterface flow = null;
+
+        try {
+            flow = new MatrixGraph(path, 1000, 10000);
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int s = 109;
+        int t = 609;
+
+        fordFulkerson(flow, s, t);
+    }
 }
