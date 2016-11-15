@@ -1,8 +1,6 @@
 package labs.lab04;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.PriorityQueue;
@@ -36,17 +34,18 @@ public class HuffmanAlgorithm {
     private HashMap<Character, String> charToCode;
     private HashMap<String, Character> codeToChar;
 
-
     private String sourceText;
     private String compressedString;
     private String decompressedString;
 
     public HuffmanAlgorithm(String sourceText) {
         this.sourceText = sourceText;
+        this.q = new PriorityQueue<>(100, new FrequencyComparator());
+        this.charToCode = new HashMap<>();
+        this.codeToChar = new HashMap<>();
     }
 
     private void runAlgorithm() throws FileNotFoundException {
-
         HashMap<Character, Integer> dict = new HashMap<>();
         for (int i = 0; i < this.sourceText.length(); i++) {
             char a = this.sourceText.charAt(i);
@@ -55,23 +54,18 @@ public class HuffmanAlgorithm {
             else
                 dict.put(a, 1);
         }
-
-
-        this.q = new PriorityQueue<>(100, new FrequencyComparator());
         int n = 0;
         for (Character c : dict.keySet()) {
             this.q.add(new Node(c, dict.get(c)));
             n++;
         }
-
         Node root = createTree(n);
         createAlgorithmTable(root);
-
     }
 
     private Node createTree(int n) {
         Node x, y;
-        for (int i = 1; i <= n - 1; i++) {
+        for (int i = 1; i<n; i++) {
             Node z = new Node();
             z.left = x = this.q.poll();
             z.right = y = this.q.poll();
@@ -81,10 +75,7 @@ public class HuffmanAlgorithm {
         return this.q.poll();
     }
 
-
     private void createAlgorithmTable(Node root) {
-        this.charToCode = new HashMap<>();
-        this.codeToChar = new HashMap<>();
         postorder(root, "");
     }
 
@@ -96,7 +87,6 @@ public class HuffmanAlgorithm {
         postorder(n.left, s + "0");
         postorder(n.right, s + "1");
 
-
         if (!Character.toString(n.ch).equals("&#092;&#048;")) {
             //  System.out.println("{" + n.ch + ":" + s + "}");
             this.charToCode.put(n.ch, s);
@@ -104,9 +94,7 @@ public class HuffmanAlgorithm {
         }
     }
 
-
     public HuffmanAlgorithm compress() throws FileNotFoundException {
-
         if(this.sourceText == null) {
             System.out.println("Brak danych do kompresji");
             return this;
@@ -120,7 +108,6 @@ public class HuffmanAlgorithm {
         this.compressedString = c;
         return this;
     }
-
 
     public HuffmanAlgorithm decompress() {
         String temp = "";
