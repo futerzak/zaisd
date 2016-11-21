@@ -1,8 +1,6 @@
 package labs.lab04;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.PriorityQueue;
@@ -32,98 +30,124 @@ class FrequencyComparator implements Comparator<Node> {
 
 public class HuffmanAlgorithm {
 
-    private static PriorityQueue<Node> q;
-    private static HashMap<Character, String> charToCode;
-    private static HashMap<String, Character> codeToChar;
+    private PriorityQueue<Node> q;
+    private HashMap<Character, String> charToCode;
+    private HashMap<String, Character> codeToChar;
 
+    private String sourceText;
+    private String compressedString;
+    private String decompressedString;
 
-    public static void runAlgorithm(String text) throws FileNotFoundException {
+    public HuffmanAlgorithm(String sourceText) {
+        this.sourceText = sourceText;
+        this.q = new PriorityQueue<>(100, new FrequencyComparator());
+        this.charToCode = new HashMap<>();
+        this.codeToChar = new HashMap<>();
+    }
 
+    private void runAlgorithm() throws FileNotFoundException {
         HashMap<Character, Integer> dict = new HashMap<>();
-        for (int i = 0; i < text.length(); i++) {
-            char a = text.charAt(i);
+        for (int i = 0; i < this.sourceText.length(); i++) {
+            char a = this.sourceText.charAt(i);
             if (dict.containsKey(a))
                 dict.put(a, dict.get(a) + 1);
             else
                 dict.put(a, 1);
         }
-
-
-        q = new PriorityQueue<>(100, new FrequencyComparator());
         int n = 0;
         for (Character c : dict.keySet()) {
-            q.add(new Node(c, dict.get(c)));
+            this.q.add(new Node(c, dict.get(c)));
             n++;
         }
-
         Node root = createTree(n);
         createAlgorithmTable(root);
-
     }
 
-    private static Node createTree(int n) {
+    private Node createTree(int n) {
         Node x, y;
-        for (int i = 1; i <= n - 1; i++) {
+        for (int i = 1; i<n; i++) {
             Node z = new Node();
-            z.left = x = q.poll();
-            z.right = y = q.poll();
+            z.left = x = this.q.poll();
+            z.right = y = this.q.poll();
             z.freq = x.freq + y.freq;
-            q.add(z);
+            this.q.add(z);
         }
-        return q.poll();
+        return this.q.poll();
     }
 
-
-    private static void createAlgorithmTable(Node root) {
-        charToCode = new HashMap<>();
-        codeToChar = new HashMap<>();
+    private void createAlgorithmTable(Node root) {
         postorder(root, "");
     }
 
     // This method is used to traverse from ROOT-to-LEAVES
-    private static void postorder(Node n, String s) {
+    private void postorder(Node n, String s) {
         if (n == null) {
             return;
         }
         postorder(n.left, s + "0");
         postorder(n.right, s + "1");
 
-
         if (!Character.toString(n.ch).equals("&#092;&#048;")) {
             //  System.out.println("{" + n.ch + ":" + s + "}");
-            charToCode.put(n.ch, s);
-            codeToChar.put(s, n.ch);
+            this.charToCode.put(n.ch, s);
+            this.codeToChar.put(s, n.ch);
         }
     }
 
+    public HuffmanAlgorithm compress() throws FileNotFoundException {
+        if(this.sourceText == null) {
+            System.out.println("Brak danych do kompresji");
+            return this;
+        }
+        this.runAlgorithm();
 
-    public static String compress(String s) {
         String c = "";
-        for (int i = 0; i < s.length(); i++)
-            c = c + charToCode.get(s.charAt(i));
-        return c;
+        for (int i = 0; i < this.sourceText.length(); i++) {
+            c += charToCode.get(this.sourceText.charAt(i));
+        }
+        this.compressedString = c;
+        return this;
     }
 
-
-    public static String decompress(String s) {
+    public HuffmanAlgorithm decompress() {
         String temp = "";
         String result = "";
-        for (int i = 0; i < s.length(); i++) {
-            temp = temp + s.charAt(i);
+        if(this.compressedString == null) {
+            System.out.println("Brak danych do dekompresji");
+            return this;
+        }
+        for (int i = 0; i < this.compressedString.length(); i++) {
+            temp = temp + this.compressedString.charAt(i);
             Character c = codeToChar.get(temp);
             if (c != null && c != 0) {
                 result = result + c;
                 temp = "";
             }
         }
-        return result;
+        this.decompressedString = result;
+        return this;
     }
 
-    public static void saveResult(String result, String fileName) throws IOException {
+    public String getCompressedString() {
+        return compressedString;
+    }
 
-        PrintWriter oFile = new PrintWriter(fileName);
+    public HuffmanAlgorithm setCompressedString(String compressedString) {
+        this.compressedString = compressedString;
+        return this;
+    }
 
-        oFile.println(result);
-        oFile.close();
+    public String getDecompressedString() {
+        return decompressedString;
+    }
+
+    public HuffmanAlgorithm setDecompressedString(String decompressedString) {
+        this.decompressedString = decompressedString;
+        return this;
+    }
+
+    public HuffmanAlgorithm setSourceText(String sourceText) {
+        this.sourceText = sourceText;
+        return this;
     }
 }
