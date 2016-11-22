@@ -12,7 +12,7 @@ public class Matrix {
     public Matrix(int rows, int columns) {
         this.ROWS = rows;
         this.COLUMNS = columns;
-        data = new BigDecimal[rows][columns];
+        this.data = new BigDecimal[rows][columns];
     }
 
     // create matrix based on 2d array
@@ -41,10 +41,13 @@ public class Matrix {
         Matrix thisMatrix = this;
         if (thisMatrix.COLUMNS != matrix.ROWS) throw new RuntimeException("Illegal matrix dimensions.");
         Matrix outputMatrix = new Matrix(thisMatrix.COLUMNS, matrix.ROWS);
-        for (int i = 0; i < outputMatrix.ROWS; i++)
-            for (int j = 0; j < outputMatrix.COLUMNS; j++)
-                for (int k = 0; k < thisMatrix.COLUMNS; k++)
-                    outputMatrix.data[i][j] += (thisMatrix.data[i][k] * matrix.data[k][j]);
+        for (int i = 0; i < outputMatrix.ROWS; i++) {
+            for (int j = 0; j < outputMatrix.COLUMNS; j++) {
+                for (int k = 0; k < thisMatrix.COLUMNS; k++) {
+                    outputMatrix.data[i][j].add((thisMatrix.data[i][k].multiply(matrix.data[k][j])));
+                }
+            }
+        }
         return outputMatrix;
     }
 

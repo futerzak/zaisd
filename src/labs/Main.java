@@ -85,7 +85,11 @@ public class Main {
 
         ArrayList<Matrix> matrices = ReadFileHelper.readMatrices("src/sample-matrices.txt", number);
 
-        MatricesMultiplicationAlgorithm matricesMultiplicationAlgorithm = new MatricesMultiplicationAlgorithm(matrices);
+
+
+//        System.out.println(matrices.get(0));
+        return;
+//        MatricesMultiplicationAlgorithm matricesMultiplicationAlgorithm = new MatricesMultiplicationAlgorithm(matrices);
 
 
 
