@@ -1,16 +1,14 @@
 package labs;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.Scanner;
 
-import labs.lab01.GraphInterface;
-import labs.lab01.ListGraph;
-import labs.lab01.MatrixGraph;
+import labs.lab01.*;
 import labs.lab02.WarshalFloydAlgorithm;
+import labs.lab03.Edge;
 import labs.lab03.FordFulkerson;
+import labs.lab03.Vertex;
 import labs.lab04.HuffmanAlgorithm;
 import labs.lab04.SaveFileHelper;
 
@@ -156,17 +154,50 @@ public class Main {
 
 	private static void fordFulkersonRun(String path) {
 
-        GraphInterface flow = null;
+//        GraphInterface flow = null;
+//
+//        try {
+//            flow = new MatrixGraph(path, 1000, 10000);
+//        }catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        int s = 109;
+//        int t = 609;
+//
+//        fordFulkerson(flow, s, t);
 
+
+        GraphfInterface  matrixGraph = null, listGraph = null;
+
+        matrixGraph = new MatrixfGraph();
+
+        File graphFile = new File("src/duzy_graf.txt");
+
+        BufferedReader buffer = new BufferedReader(new FileReader(graphFile));
+        String line = "";
+        int i = 1;
         try {
-            flow = new MatrixGraph(path, 1000, 10000);
-        }catch (IOException e) {
+            for (line = buffer.readLine(); line != null; line = buffer.readLine()) {
+                String[] t = line.split(";");
+
+                Vertex initialVertex = new Vertex().setVertexId(Integer.parseInt(t[0].trim()));
+                Vertex finalVertex = new Vertex().setVertexId(Integer.parseInt(t[1].trim()));
+                Edge edge = new Edge().setEdgeId(i)
+                        .setEdgeWeight(Integer.parseInt(t[2].trim()));
+
+                matrixGraph.addVertex(initialVertex);
+                matrixGraph.addVertex(finalVertex);
+                matrixGraph.addEdge(initialVertex, finalVertex, edge);
+                i++;
+
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        int s = 109;
-        int t = 609;
-
-        fordFulkerson(flow, s, t);
+        FordFulkerson fordFulkerson = new FordFulkerson(matrixGraph.getVertexCount());
+		int maxFlow = fordFulkerson.fordFulkerson(matrixGraph, 109, 609);
+		System.out.println("Max flow 109 -> 609: " + maxFlow);
     }
 }
