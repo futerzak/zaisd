@@ -59,7 +59,7 @@ public class MatrixfGraph implements GraphfInterface
         }
     }
 
-    public MatrixGraph() {
+    public MatrixfGraph() {
         this.graph = new Edge[2000][2000];
     }
 

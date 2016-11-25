@@ -146,27 +146,7 @@ public class Main {
         warshalFloyd(g, g2);
     }
 
-	private static void fordFulkerson(GraphInterface g, int s, int t) {
-		FordFulkerson ff = new FordFulkerson();
-		g.printGraph();
-		System.out.println("Maxymalny przepływ: " + ff.resolve(g, s, t));
-	}
-
 	private static void fordFulkersonRun(String path) {
-
-//        GraphInterface flow = null;
-//
-//        try {
-//            flow = new MatrixGraph(path, 1000, 10000);
-//        }catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        int s = 109;
-//        int t = 609;
-//
-//        fordFulkerson(flow, s, t);
-
 
         GraphfInterface  matrixGraph = null, listGraph = null;
 
@@ -174,7 +154,12 @@ public class Main {
 
         File graphFile = new File("src/duzy_graf.txt");
 
-        BufferedReader buffer = new BufferedReader(new FileReader(graphFile));
+        BufferedReader buffer = null;
+        try {
+            buffer = new BufferedReader(new FileReader(graphFile));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         String line = "";
         int i = 1;
         try {

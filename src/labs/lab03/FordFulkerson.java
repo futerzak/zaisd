@@ -8,34 +8,6 @@ import java.util.Queue;
 
 public class FordFulkerson {
 
-	int[][] c;
-	int[][] f;
-	
-	public int resolve(GraphInterface graph, int s, int t) {
-		
-		int V = graph.nodesNumber();
-		c = new int[V][V];
-		f = new int[V][V];
-		
-		for(int i = 0; i < V; i++){
-			for(int j = 0; j < V; j++){
-				f[i][j] = 0;
-			}
-		}
-		for(int i=0; i < V; i++){
-			for(int j=0; j < V; j++) {
-				graph.areNeighbours(i, j);
-			}
-		}
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		return 9351;
-	}
-
-
 	private int[] parent;
 	private Queue<Integer> queue;
 	private int numberOfVertices;
@@ -44,9 +16,9 @@ public class FordFulkerson {
 	public FordFulkerson(int numberOfVertices)
 	{
 		this.numberOfVertices = numberOfVertices;
-		this.queue = new LinkedList<Integer>();
-		parent = new int[numberOfVertices + 1];
-		visited = new boolean[numberOfVertices + 1];
+		this.queue = new LinkedList<>();
+		this.parent = new int[numberOfVertices + 1];
+		this.visited = new boolean[numberOfVertices + 1];
 	}
 
 	public boolean bfs(int source, int goal, int graph[][])

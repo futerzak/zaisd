@@ -1,5 +1,8 @@
 package labs.lab01;
 
+import labs.lab03.Edge;
+import labs.lab03.Vertex;
+
 /**
  * Created by mtopor on 22.11.16.
  */
