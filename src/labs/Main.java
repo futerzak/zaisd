@@ -85,6 +85,9 @@ public class Main {
 
         ArrayList<Matrix> matrices = ReadFileHelper.readMatrices("src/sample-matrices.txt", number);
 
+        for (Matrix m: matrices) {
+            m.show();
+        }
 
 
 //        System.out.println(matrices.get(0));

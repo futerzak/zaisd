@@ -9,69 +9,49 @@ import java.util.Scanner;
 
 public class ReadFileHelper {
     public static ArrayList<Matrix> readMatrices(String filePath, int number) {
-        List<Matrix> matrices = new ArrayList<>();
 
-        for (int i = 0; i < number; i++) {
-            BigDecimal[][] matrixData = new BigDecimal[][];
-
-            matrixData = getData();
-            matrices.add(new Matrix(matrixData));
-        }
-
-        return (ArrayList<Matrix>) matrices;
-
-
-    }
-/** TODO FIXME  */
-    private static BigDecimal[][] getData(String filePath) throws FileNotFoundException {
-
-        String line = "";
-
-        Scanner scanner = new Scanner(new File(filePath));
-        int counter = 0;
-        int data = 0;
-
-        while((line = scanner.nextLine()) != null) {
-            if (line == null) {
-                counter++;
-            }
-            int number;
-            if (counter >= number){
-                break;
-            }
-            ArrayList row = new ArrayList<Double>;
-            for (String i : line.split(";")) {
-                row.add(Double.parseDouble(i));
-            }
-
-
-        }
-
+        ArrayList<Matrix> matrices = null;
         try {
-            line = new Scanner(new File(filePath)).nextLine();
-            System.out.println(line);
+            matrices = getData(filePath);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
+        ArrayList<Matrix> resultMatrices = new ArrayList<>();
 
-
-        return data;
-    }
-
-    public String[] readLines(String filename) throws IOException {
-        FileReader fileReader = new FileReader(filename);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        List<String> lines = new ArrayList<>();
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            lines.add(line);
+        for(int i=0; i<number; i++) {
+            resultMatrices.add(matrices.get(i));
         }
-        bufferedReader.close();
-        return lines.toArray(new String[lines.size()]);
+
+        return resultMatrices;
     }
 
-    public void readFile(String filePath) {
-        List<String> stringList = Files.readAllLines(filePath);
+/** TODO FIXME  */
+    private static ArrayList<Matrix> getData(String filePath) throws FileNotFoundException {
+
+        String data = "";
+        try {
+            data = new Scanner(new File(filePath)).useDelimiter("\\A").next();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        BigDecimal[][] matrixData = new BigDecimal[100][100];
+        ArrayList<Matrix> matricesArray = new ArrayList<>();
+
+        int row=0, column=0;
+
+        for (String matricesString : data.split("\n\n")) {
+            for(String rowString : matricesString.split("\n")) {
+                row++;
+                for(String unitData: rowString.split(";")) {
+                    matrixData[row][column++] = new BigDecimal(unitData);
+                }
+            }
+            matricesArray.add(new Matrix(matrixData));
+            matrixData = new BigDecimal[100][100];
+        }
+
+        return matricesArray;
     }
 }
