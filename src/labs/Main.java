@@ -81,9 +81,10 @@ public class Main {
         int number =  in.nextInt();
 
         ArrayList<Matrix> matrices = ReadFileHelper.readMatrices("src/sample-matrices.txt", number);
-
+        int test = 0;
         for (Matrix m: matrices) {
             m.show();
+            System.out.println(test++ + "------------------------------");
         }
 
 

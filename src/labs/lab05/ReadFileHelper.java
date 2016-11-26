@@ -36,25 +36,31 @@ public class ReadFileHelper {
             e.printStackTrace();
         }
 
-        BigDecimal[][] matrixData = new BigDecimal[100][100];
+        BigDecimal[][] matrixData = new BigDecimal[0][0];
         ArrayList<Matrix> matricesArray = new ArrayList<>();
 
         int row=0, column=0;
+        int test=0;
 
         for (String matricesString : data.split("\n\n")) {
             row=0;
-            for(String rowString : matricesString.split("\n")) {
-                row++;
+
+            String[] rowsArray = matricesString.split("\n");
+            String[] firstColumnArray = rowsArray[0].split(";");
+
+            matrixData = new BigDecimal[rowsArray.length][firstColumnArray.length];
+
+
+            for(String rowString : rowsArray) {
                 column=0;
-                for(String unitData: rowString.split(";")) {
-                    System.out.print("\t" + new BigDecimal(unitData.trim()).setScale(2));
+                String[] columnsArray = rowString.split(";");
+
+                for(String unitData: columnsArray) {
                     matrixData[row][column++] = new BigDecimal(unitData.trim()).setScale(2);
                 }
-                System.out.println();
+                row++;
             }
             matricesArray.add(new Matrix(matrixData));
-            matrixData = new BigDecimal[100][100];
-            break;
         }
 
         return matricesArray;
