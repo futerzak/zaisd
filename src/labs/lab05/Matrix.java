@@ -55,7 +55,7 @@ public class Matrix {
     public void show() {
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLUMNS; j++) {
-                System.out.printf("%9.4f ", data[i][j]);
+                System.out.print("\t"+data[i][j]);
             }
             System.out.println();
         }

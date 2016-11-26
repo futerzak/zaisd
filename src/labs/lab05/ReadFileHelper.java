@@ -42,14 +42,19 @@ public class ReadFileHelper {
         int row=0, column=0;
 
         for (String matricesString : data.split("\n\n")) {
+            row=0;
             for(String rowString : matricesString.split("\n")) {
                 row++;
+                column=0;
                 for(String unitData: rowString.split(";")) {
-                    matrixData[row][column++] = new BigDecimal(unitData);
+                    System.out.print("\t" + new BigDecimal(unitData.trim()).setScale(2));
+                    matrixData[row][column++] = new BigDecimal(unitData.trim()).setScale(2);
                 }
+                System.out.println();
             }
             matricesArray.add(new Matrix(matrixData));
             matrixData = new BigDecimal[100][100];
+            break;
         }
 
         return matricesArray;
