@@ -4,19 +4,20 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class ReadFileHelper {
-    public static ArrayList<Matrix> readMatrices(String filePath, int number) {
+    public static List<Matrix> readMatrices(String filePath, int number) {
 
-        ArrayList<Matrix> matrices = null;
+        List<Matrix> matrices = null;
         try {
             matrices = getData(filePath);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        ArrayList<Matrix> resultMatrices = new ArrayList<>();
+        List<Matrix> resultMatrices = new ArrayList<>();
 
         for(int i=0; i<number; i++) {
             resultMatrices.add(matrices.get(i));
@@ -25,7 +26,7 @@ public class ReadFileHelper {
         return resultMatrices;
     }
 
-    private static ArrayList<Matrix> getData(String filePath) throws FileNotFoundException {
+    private static List<Matrix> getData(String filePath) throws FileNotFoundException {
 
         String data = "";
         try {
@@ -34,7 +35,7 @@ public class ReadFileHelper {
             e.printStackTrace();
         }
 
-        ArrayList<Matrix> matricesArray = new ArrayList<>();
+        List<Matrix> matricesArray = new ArrayList<>();
         int row=0, column=0;
 
         for (String matricesString : data.split("\r\n\r\n")) {

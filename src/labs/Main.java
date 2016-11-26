@@ -8,13 +8,14 @@ import labs.lab03.Vertex;
 import labs.lab04.HuffmanAlgorithm;
 import labs.lab04.SaveFileHelper;
 import labs.lab05.Matrix;
+import labs.lab05.ParallelMatricesMultiplicationAlgorithm;
 import labs.lab05.ReadFileHelper;
-import labs.lab05.SequenceMatricesMultiplicationAlgorithm;
+import labs.lab05.SequentialMatricesMultiplicationAlgorithm;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.*;
 
 
 public class Main {
@@ -62,7 +63,13 @@ public class Main {
                 break;
             case "4":
                 /* Matrix Multiplication */
-                matrixMultiplicationRun();
+                try {
+                    matrixMultiplicationRun();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 /* end Matrix Multiplication */
                 break;
 
@@ -74,7 +81,7 @@ public class Main {
         }
     }
 
-    private static void matrixMultiplicationRun() {
+    private static void matrixMultiplicationRun() throws ExecutionException, InterruptedException {
         System.out.println("Trwa implementacja");
 
         System.out.println("Podaj liczbę macierzy do załadowania");
@@ -82,20 +89,54 @@ public class Main {
         int number =  in.nextInt();
         in.close();
 
-        ArrayList<Matrix> matrices = ReadFileHelper.readMatrices("src/sample-matrices.txt", number);
-        int test = 0;
-        for (Matrix m: matrices) {
-            m.show();
-            System.out.println("macierz "+ test++ + " ------------------------------");
+        List<Matrix> matrices = ReadFileHelper.readMatrices("src/sample-matrices.txt", number);
+
+        long startSexuence = System.currentTimeMillis();
+
+        SequentialMatricesMultiplicationAlgorithm sequentialMatricesMultiplicationAlgorithm = new SequentialMatricesMultiplicationAlgorithm(matrices);
+        sequentialMatricesMultiplicationAlgorithm.run().show();
+
+        long endSequence = System.currentTimeMillis();
+        long resultSequence = endSequence - startSexuence;
+        System.out.println("Czas wykonywania sekwencyjnego: " + resultSequence + "ms");
+
+
+        int matricesNumber = matrices.size();
+        int processorsNumber = Runtime.getRuntime().availableProcessors();
+        int threadNumber = (int) Math.floor(matricesNumber/processorsNumber);
+
+
+        ExecutorService pool = Executors.newFixedThreadPool(processorsNumber);
+
+        List<Future<Matrix>> resultMatrixList = new ArrayList<>();
+        List<Matrix> matricesStack = new Stack<>();
+
+        long startParralel = System.currentTimeMillis();
+
+        for(int i=0;i<matricesNumber;i+=threadNumber){
+            if(i+threadNumber >= matricesNumber && matricesNumber%processorsNumber != 0) {
+                threadNumber = matricesNumber%processorsNumber;
+            }
+            Future<Matrix> resolvedMatrix = pool.submit(new ParallelMatricesMultiplicationAlgorithm(matrices, i,i+threadNumber));
+
+            resolvedMatrix.get();
+            resultMatrixList.add(resolvedMatrix);
+
+            for(Future<Matrix> resultMatrix : resultMatrixList) {
+                matricesStack.add(resultMatrix.get());
+            }
+
+            while (matricesStack.size() !=1) {
+                Matrix temp = matricesStack.remove(0).times(matricesStack.remove(0));
+                matricesStack.add(temp);
+            }
         }
 
 
-        SequenceMatricesMultiplicationAlgorithm matricesMultiplicationAlgorithm = new SequenceMatricesMultiplicationAlgorithm(matrices);
+        long endParallel = System.currentTimeMillis();
+        long resultParallel = endParallel - startParralel;
 
-        matricesMultiplicationAlgorithm.run().show();
-
-
-
+        System.out.println("Czas wykonywania równoległego: " + resultParallel + "ms");
     }
 
     private static void huffman(String sourceTextContent, String compressionFile, String decompressionFile) {
