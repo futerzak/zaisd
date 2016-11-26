@@ -40,11 +40,11 @@ public class Matrix {
     public Matrix times(Matrix matrix) {
         Matrix thisMatrix = this;
         if (thisMatrix.COLUMNS != matrix.ROWS) throw new RuntimeException("Illegal matrix dimensions.");
-        Matrix outputMatrix = new Matrix(thisMatrix.COLUMNS, matrix.ROWS);
+        Matrix outputMatrix = new Matrix(thisMatrix.ROWS, matrix.COLUMNS);
         for (int i = 0; i < outputMatrix.ROWS; i++) {
             for (int j = 0; j < outputMatrix.COLUMNS; j++) {
                 for (int k = 0; k < thisMatrix.COLUMNS; k++) {
-                    outputMatrix.data[i][j].add((thisMatrix.data[i][k].multiply(matrix.data[k][j])));
+                    outputMatrix.data[i][j] = thisMatrix.data[i][k].multiply(matrix.data[k][j]);
                 }
             }
         }

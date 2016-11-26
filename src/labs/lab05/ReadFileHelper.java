@@ -1,10 +1,9 @@
 package labs.lab05;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class ReadFileHelper {
@@ -26,7 +25,6 @@ public class ReadFileHelper {
         return resultMatrices;
     }
 
-/** TODO FIXME  */
     private static ArrayList<Matrix> getData(String filePath) throws FileNotFoundException {
 
         String data = "";
@@ -36,25 +34,20 @@ public class ReadFileHelper {
             e.printStackTrace();
         }
 
-        BigDecimal[][] matrixData = new BigDecimal[0][0];
         ArrayList<Matrix> matricesArray = new ArrayList<>();
-
         int row=0, column=0;
-        int test=0;
 
-        for (String matricesString : data.split("\n\n")) {
-            row=0;
-
-            String[] rowsArray = matricesString.split("\n");
+        for (String matricesString : data.split("\r\n\r\n")) {
+            String[] rowsArray = matricesString.split("\r\n");
             String[] firstColumnArray = rowsArray[0].split(";");
 
-            matrixData = new BigDecimal[rowsArray.length][firstColumnArray.length];
+            BigDecimal[][] matrixData = new BigDecimal[rowsArray.length][firstColumnArray.length];
 
-
+            row=0;
             for(String rowString : rowsArray) {
-                column=0;
                 String[] columnsArray = rowString.split(";");
 
+                column=0;
                 for(String unitData: columnsArray) {
                     matrixData[row][column++] = new BigDecimal(unitData.trim()).setScale(2);
                 }

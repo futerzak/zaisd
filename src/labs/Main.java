@@ -9,6 +9,7 @@ import labs.lab04.HuffmanAlgorithm;
 import labs.lab04.SaveFileHelper;
 import labs.lab05.Matrix;
 import labs.lab05.ReadFileHelper;
+import labs.lab05.SequenceMatricesMultiplicationAlgorithm;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -76,22 +77,22 @@ public class Main {
     private static void matrixMultiplicationRun() {
         System.out.println("Trwa implementacja");
 
-        System.out.println("Podaj liczbę macierzy od załadowania");
+        System.out.println("Podaj liczbę macierzy do załadowania");
         Scanner in = new Scanner(System.in);
         int number =  in.nextInt();
+        in.close();
 
         ArrayList<Matrix> matrices = ReadFileHelper.readMatrices("src/sample-matrices.txt", number);
         int test = 0;
         for (Matrix m: matrices) {
             m.show();
-            System.out.println(test++ + "------------------------------");
+            System.out.println("macierz "+ test++ + " ------------------------------");
         }
 
 
-//        System.out.println(matrices.get(0));
-        return;
-//        MatricesMultiplicationAlgorithm matricesMultiplicationAlgorithm = new MatricesMultiplicationAlgorithm(matrices);
+        SequenceMatricesMultiplicationAlgorithm matricesMultiplicationAlgorithm = new SequenceMatricesMultiplicationAlgorithm(matrices);
 
+        matricesMultiplicationAlgorithm.run().show();
 
 
 
