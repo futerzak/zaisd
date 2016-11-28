@@ -9,13 +9,12 @@ import labs.lab04.HuffmanAlgorithm;
 import labs.lab04.SaveFileHelper;
 import labs.lab05.Matrix;
 import labs.lab05.ReadFileHelper;
-import labs.lab05.SequenceMatricesMultiplicationAlgorithm;
+import labs.lab05.SequentialMatricesMultiplicationAlgorithm;
 import labs.lab06.ComputePi;
 
 import java.io.*;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -160,7 +159,7 @@ public class Main {
         }
 
 
-        SequenceMatricesMultiplicationAlgorithm matricesMultiplicationAlgorithm = new SequenceMatricesMultiplicationAlgorithm(matrices);
+        SequentialMatricesMultiplicationAlgorithm matricesMultiplicationAlgorithm = new SequentialMatricesMultiplicationAlgorithm(matrices);
 
         matricesMultiplicationAlgorithm.run().show();
 

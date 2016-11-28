@@ -37,8 +37,8 @@ public class ReadFileHelper {
         ArrayList<Matrix> matricesArray = new ArrayList<>();
         int row=0, column=0;
 
-        for (String matricesString : data.split("\r\n\r\n")) {
-            String[] rowsArray = matricesString.split("\r\n");
+        for (String matricesString : data.split("\n\n")) {
+            String[] rowsArray = matricesString.split("\n");
             String[] firstColumnArray = rowsArray[0].split(";");
 
             BigDecimal[][] matrixData = new BigDecimal[rowsArray.length][firstColumnArray.length];
