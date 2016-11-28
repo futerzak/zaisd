@@ -10,11 +10,15 @@ import labs.lab04.SaveFileHelper;
 import labs.lab05.Matrix;
 import labs.lab05.ReadFileHelper;
 import labs.lab05.SequenceMatricesMultiplicationAlgorithm;
+import labs.lab06.ComputePi;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 
 public class Main {
@@ -30,6 +34,7 @@ public class Main {
         System.out.println("2 - Algorytm Forda-Fulkersona");
         System.out.println("3 - Algorytm Huffmana");
         System.out.println("4 - Mnożenie macierzy");
+        System.out.println("5 - Obliczanie PI");
         System.out.print("Wybór: ");
 
         Scanner in = new Scanner(System.in);
@@ -65,7 +70,15 @@ public class Main {
                 matrixMultiplicationRun();
                 /* end Matrix Multiplication */
                 break;
-
+            case "5":
+                /* PI Computing */
+                try {
+                    computingPiRun();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                /* end PI Computing */
+                break;
 
             default:
                 System.out.println("Dokonano złego wyboru!");
@@ -73,6 +86,63 @@ public class Main {
                 break;
         }
     }
+
+    private static void computingPiRun() throws Exception {
+
+        int[] n = new int[4];
+        for(int i=0;i<4;i++) {
+            n[i] = (int) Math.pow(10,i+5);
+        }
+
+        for(int i=0;i<n.length;i++) {
+            computePi(n[i], true);
+            computePi(n[i], false);
+            System.out.println();
+        }
+        System.out.println("------------------------");
+
+
+    }
+
+    public static void computePi(int n, boolean parallel) throws Exception {
+
+        Double result = 0.0;
+        Long startTime, endTime;
+
+        startTime = System.currentTimeMillis();
+
+        if(parallel) {
+
+            int procesorsNumber = Runtime.getRuntime().availableProcessors();
+
+            ExecutorService pool = Executors.newFixedThreadPool(procesorsNumber);
+            List<Future<Double>> list = new ArrayList<>();
+
+            int range = (int) Math.floor(n/procesorsNumber);
+
+            for(int i=0;i<n;i+=range) {
+                Future<Double> future = pool.submit(new ComputePi(i,i+range, n));
+                list.add(future);
+            }
+
+            for(Future<Double> future: list) {
+                result += future.get();
+            }
+
+        } else {
+            for(int i=0;i<=n;i++){
+                result += 4.0 / (1.0 + Math.pow( ( (2.0*i) + 1.0) / (2.0 * n), 2));
+            }
+        }
+
+        endTime = System.currentTimeMillis();
+
+	    String type = parallel?"równoległego":"sekwencyjnego";
+	    System.out.println("Czas obliczenia " + type + " dla n="+ n +" wynosi: " + (endTime-startTime) + "ms");
+        System.out.println("Wynik: " + result.toString());
+
+    }
+
 
     private static void matrixMultiplicationRun() {
         System.out.println("Trwa implementacja");
