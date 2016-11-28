@@ -20,7 +20,7 @@ import java.util.concurrent.*;
 
 
 public class Main {
-    public static void main(String[] args) throws NumberFormatException, IOException{
+    public static void main(String[] args) throws NumberFormatException, IOException {
 
         chooseAlgorithm();
     }
@@ -36,14 +36,14 @@ public class Main {
         System.out.print("Wybór: ");
 
         Scanner in = new Scanner(System.in);
-        String choose =  in.nextLine();
+        String choose = in.nextLine();
 
         System.out.println("Czekaj ...");
         switch (choose) {
             case "1":
                 /* Warshal-Floyd */
                 warshalFloydRun("src/grafWarshalaFloyda.txt");
-		        /* end Warshal-Floyd */
+                /* end Warshal-Floyd */
                 break;
             case "2":
                 /* Ford-Fulkerson */
@@ -95,11 +95,11 @@ public class Main {
     private static void computingPiRun() throws Exception {
 
         int[] n = new int[4];
-        for(int i=0;i<4;i++) {
-            n[i] = (int) Math.pow(10,i+5);
+        for (int i = 0; i < 4; i++) {
+            n[i] = (int) Math.pow(10, i + 5);
         }
 
-        for(int i=0;i<n.length;i++) {
+        for (int i = 0; i < n.length; i++) {
             computePi(n[i], true);
             computePi(n[i], false);
             System.out.println();
@@ -116,34 +116,34 @@ public class Main {
 
         startTime = System.currentTimeMillis();
 
-        if(parallel) {
+        if (parallel) {
 
             int procesorsNumber = Runtime.getRuntime().availableProcessors();
 
             ExecutorService pool = Executors.newFixedThreadPool(procesorsNumber);
             List<Future<Double>> list = new ArrayList<>();
 
-            int range = (int) Math.floor(n/procesorsNumber);
+            int range = (int) Math.floor(n / procesorsNumber);
 
-            for(int i=0;i<n;i+=range) {
-                Future<Double> future = pool.submit(new ComputePi(i,i+range, n));
+            for (int i = 0; i < n; i += range) {
+                Future<Double> future = pool.submit(new ComputePi(i, i + range, n));
                 list.add(future);
             }
 
-            for(Future<Double> future: list) {
+            for (Future<Double> future : list) {
                 result += future.get();
             }
 
         } else {
-            for(int i=0;i<=n;i++){
-                result += 4.0 / (1.0 + Math.pow( ( (2.0*i) + 1.0) / (2.0 * n), 2));
+            for (int i = 0; i <= n; i++) {
+                result += 4.0 / (1.0 + Math.pow(((2.0 * i) + 1.0) / (2.0 * n), 2));
             }
         }
 
         endTime = System.currentTimeMillis();
 
-        String type = parallel?"równoległego":"sekwencyjnego";
-        System.out.println("Czas obliczenia " + type + " dla n="+ n +" wynosi: " + (endTime-startTime) + "ms");
+        String type = parallel ? "równoległego" : "sekwencyjnego";
+        System.out.println("Czas obliczenia " + type + " dla n=" + n + " wynosi: " + (endTime - startTime) + "ms");
         System.out.println("Wynik: " + result.toString());
 
     }
@@ -153,7 +153,7 @@ public class Main {
 
         System.out.println("Podaj liczbę macierzy do załadowania");
         Scanner in = new Scanner(System.in);
-        int number =  in.nextInt();
+        int number = in.nextInt();
         in.close();
 
         List<Matrix> matrices = ReadFileHelper.readMatrices("src/sample-matrices.txt", number);
@@ -170,7 +170,7 @@ public class Main {
 
         int matricesNumber = matrices.size();
         int processorsNumber = Runtime.getRuntime().availableProcessors();
-        int threadNumber = (int) Math.floor(matricesNumber/processorsNumber);
+        int threadNumber = (int) Math.floor(matricesNumber / processorsNumber);
 
 
         ExecutorService pool = Executors.newFixedThreadPool(processorsNumber);
@@ -180,20 +180,20 @@ public class Main {
 
         long startParralel = System.currentTimeMillis();
 
-        for(int i=0;i<matricesNumber;i+=threadNumber){
-            if(i+threadNumber >= matricesNumber && matricesNumber%processorsNumber != 0) {
-                threadNumber = matricesNumber%processorsNumber;
+        for (int i = 0; i < matricesNumber; i += threadNumber) {
+            if (i + threadNumber >= matricesNumber && matricesNumber % processorsNumber != 0) {
+                threadNumber = matricesNumber % processorsNumber;
             }
-            Future<Matrix> resolvedMatrix = pool.submit(new ParallelMatricesMultiplicationAlgorithm(matrices, i,i+threadNumber));
+            Future<Matrix> resolvedMatrix = pool.submit(new ParallelMatricesMultiplicationAlgorithm(matrices, i, i + threadNumber));
 
             resolvedMatrix.get();
             resultMatrixList.add(resolvedMatrix);
 
-            for(Future<Matrix> resultMatrix : resultMatrixList) {
+            for (Future<Matrix> resultMatrix : resultMatrixList) {
                 matricesStack.add(resultMatrix.get());
             }
 
-            while (matricesStack.size() !=1) {
+            while (matricesStack.size() != 1) {
                 Matrix temp = matricesStack.remove(0).times(matricesStack.remove(0));
                 matricesStack.add(temp);
             }
@@ -225,9 +225,9 @@ public class Main {
             e.printStackTrace();
         }
 
-        int l_origin = sourceTextContent.length()*8;
+        int l_origin = sourceTextContent.length() * 8;
         int l_compressed = compressedString.length();
-        System.out.print("Stopień kompresji: " + (float)(l_origin - l_compressed) / l_origin);
+        System.out.print("Stopień kompresji: " + (float) (l_origin - l_compressed) / l_origin);
 
         huffmanAlgorithm.decompress();
 
@@ -272,7 +272,7 @@ public class Main {
         System.out.println("odległość: " + D2[startNode][endNode]);
         System.out.println("ścieżka: " + p2);
 
-        System.out.println("R = Tlista / Tmacierz = " + (float) timeList/timeMatrix);
+        System.out.println("R = Tlista / Tmacierz = " + (float) timeList / timeMatrix);
     }
 
     private static void warshalFloydRun(String path) {
@@ -292,7 +292,7 @@ public class Main {
 
     private static void fordFulkersonRun(String path) {
 
-        GraphfInterface  matrixGraph = null, listGraph = null;
+        GraphfInterface matrixGraph = null, listGraph = null;
 
         matrixGraph = new MatrixfGraph();
 
