@@ -71,11 +71,13 @@ public class Main {
                 /* end Matrix Multiplication */
                 break;
             case "5":
+                /* PI Computing */
                 try {
                     computingPiRun();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                /* end PI Computing */
                 break;
 
             default:
@@ -96,8 +98,8 @@ public class Main {
             computePi(n[i], true);
             computePi(n[i], false);
             System.out.println();
-
         }
+        System.out.println("------------------------");
 
 
     }
