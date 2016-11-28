@@ -1,9 +1,5 @@
 package labs;
 
-import java.io.*;
-import java.util.LinkedList;
-import java.util.Scanner;
-
 import labs.lab01.*;
 import labs.lab02.WarshalFloydAlgorithm;
 import labs.lab03.Edge;
@@ -11,6 +7,14 @@ import labs.lab03.FordFulkerson;
 import labs.lab03.Vertex;
 import labs.lab04.HuffmanAlgorithm;
 import labs.lab04.SaveFileHelper;
+import labs.lab05.Matrix;
+import labs.lab05.ReadFileHelper;
+import labs.lab05.SequenceMatricesMultiplicationAlgorithm;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Scanner;
 
 
 public class Main {
@@ -25,6 +29,7 @@ public class Main {
         System.out.println("1 - Algorytm Warshala-Floyda");
         System.out.println("2 - Algorytm Forda-Fulkersona");
         System.out.println("3 - Algorytm Huffmana");
+        System.out.println("4 - Mnożenie macierzy");
         System.out.print("Wybór: ");
 
         Scanner in = new Scanner(System.in);
@@ -55,11 +60,42 @@ public class Main {
                 huffman(text, "src/compressed.dat", "src/decompressed.txt");
 		        /* end Huffman */
                 break;
+            case "4":
+                /* Matrix Multiplication */
+                matrixMultiplicationRun();
+                /* end Matrix Multiplication */
+                break;
+
+
             default:
                 System.out.println("Dokonano złego wyboru!");
                 chooseAlgorithm();
                 break;
         }
+    }
+
+    private static void matrixMultiplicationRun() {
+        System.out.println("Trwa implementacja");
+
+        System.out.println("Podaj liczbę macierzy do załadowania");
+        Scanner in = new Scanner(System.in);
+        int number =  in.nextInt();
+        in.close();
+
+        ArrayList<Matrix> matrices = ReadFileHelper.readMatrices("src/sample-matrices.txt", number);
+        int test = 0;
+        for (Matrix m: matrices) {
+            m.show();
+            System.out.println("macierz "+ test++ + " ------------------------------");
+        }
+
+
+        SequenceMatricesMultiplicationAlgorithm matricesMultiplicationAlgorithm = new SequenceMatricesMultiplicationAlgorithm(matrices);
+
+        matricesMultiplicationAlgorithm.run().show();
+
+
+
     }
 
     private static void huffman(String sourceTextContent, String compressionFile, String decompressionFile) {
