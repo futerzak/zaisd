@@ -1,5 +1,6 @@
 package labs;
 
+import labs.Helpers.ReadFileHelper;
 import labs.lab01.*;
 import labs.lab02.WarshalFloydAlgorithm;
 import labs.lab03.Edge;
@@ -8,9 +9,11 @@ import labs.lab03.Vertex;
 import labs.lab04.HuffmanAlgorithm;
 import labs.lab04.SaveFileHelper;
 import labs.lab05.Matrix;
-import labs.lab05.ReadFileHelper;
+import labs.lab05.ReadMatrices;
 import labs.lab05.SequentialMatricesMultiplicationAlgorithm;
 import labs.lab06.ComputePi;
+import labs.lab07.GrahamAlgorithmMain;
+import labs.lab07.Point2D;
 
 import java.io.*;
 import java.util.*;
@@ -34,6 +37,7 @@ public class Main {
         System.out.println("3 - Algorytm Huffmana");
         System.out.println("4 - Mnożenie macierzy");
         System.out.println("5 - Obliczanie PI");
+        System.out.println("6 - Algorytm Grahama");
         System.out.print("Wybór: ");
 
         Scanner in = new Scanner(System.in);
@@ -78,12 +82,53 @@ public class Main {
                 }
                 /* end PI Computing */
                 break;
-
+            case "6":
+                /* Graham */
+                grahamAlgorithmRun();
+                /* end Graham */
+                break;
             default:
                 System.out.println("Dokonano złego wyboru!");
                 chooseAlgorithm();
                 break;
         }
+    }
+
+    private static void grahamAlgorithmRun() {
+
+	    /* read file */
+        String filePath = "src/punktyPrzykladowe.csv";
+
+        String data = ReadFileHelper.readFile(filePath);
+
+        int rowsNumber = data.split("\n").length;
+        int columnsNumber = data.split("\n")[0].split(",").length;
+
+        double[][] dataArray = new double[rowsNumber][columnsNumber];
+
+        int row=0, column=0;
+        for (String rowString : data.split("\n")) {
+            column=0;
+            for(String unitString : rowString.split(",")) {
+                dataArray[row][column++] = Double.parseDouble(unitString);
+            }
+            row++;
+        }
+        /* end read file */
+
+        Point2D[] points = new Point2D[rowsNumber];
+
+        for (int i = 0; i < rowsNumber; i++)
+        {
+            points[i] = new Point2D(dataArray[i][0], dataArray[i][1]);
+        }
+
+        GrahamAlgorithmMain graham = new GrahamAlgorithmMain(points);
+
+        for (Point2D p : graham.hull())
+            System.out.println(p);
+
+
     }
 
     private static void computingPiRun() throws Exception {
@@ -93,9 +138,9 @@ public class Main {
             n[i] = (int) Math.pow(10,i+5);
         }
 
-        for(int i=0;i<n.length;i++) {
-            computePi(n[i], true);
-            computePi(n[i], false);
+        for (int aN : n) {
+            computePi(aN, true);
+            computePi(aN, false);
             System.out.println();
         }
         System.out.println("------------------------");
@@ -103,7 +148,7 @@ public class Main {
 
     }
 
-    public static void computePi(int n, boolean parallel) throws Exception {
+    private static void computePi(int n, boolean parallel) throws Exception {
 
         Double result = 0.0;
         Long startTime, endTime;
@@ -142,7 +187,6 @@ public class Main {
 
     }
 
-
     private static void matrixMultiplicationRun() {
         System.out.println("Trwa implementacja");
 
@@ -151,7 +195,7 @@ public class Main {
         int number =  in.nextInt();
         in.close();
 
-        ArrayList<Matrix> matrices = ReadFileHelper.readMatrices("src/sample-matrices.txt", number);
+        ArrayList<Matrix> matrices = ReadMatrices.readMatrices("src/sample-matrices.txt", number);
         int test = 0;
         for (Matrix m: matrices) {
             m.show();
@@ -268,7 +312,7 @@ public class Main {
         String line = "";
         int i = 1;
         try {
-            for (line = buffer.readLine(); line != null; line = buffer.readLine()) {
+            for (line = buffer != null ? buffer.readLine() : null; line != null; line = buffer.readLine()) {
                 String[] t = line.split(";");
 
                 Vertex initialVertex = new Vertex().setVertexId(Integer.parseInt(t[0].trim()));
