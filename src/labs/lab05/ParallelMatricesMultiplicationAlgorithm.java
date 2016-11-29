@@ -15,21 +15,15 @@ public class ParallelMatricesMultiplicationAlgorithm implements Callable{
         this.matrices = matrices;
         this.startMatrix = startMatrix;
         this.endMatrix = endMatrix;
+        this.result = matrices.get(startMatrix);
     }
 
     @Override
     public Matrix call() throws Exception {
 
-        List<Matrix> matrices = new Stack<>();
-        for(int i=this.startMatrix; i<this.endMatrix;i++) {
-            matrices.add(this.matrices.get(i));
+        for(int i=this.startMatrix+1;i<this.endMatrix;i++) {
+            this.result = this.result.times(this.matrices.get(i));
         }
-
-
-        while(matrices.size()>1){
-            Matrix temp = matrices.remove(0).times(matrices.remove(0));
-            matrices.add(temp);
-        }
-        return this.result = matrices.get(0);
+        return this.result;
     }
 }
