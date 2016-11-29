@@ -125,10 +125,9 @@ public class Main {
 
         GrahamAlgorithmMain graham = new GrahamAlgorithmMain(points);
 
+        System.out.println("Otoczka wypukła zbioru S:");
         for (Point2D p : graham.hull())
             System.out.println(p);
-
-
     }
 
     private static void computingPiRun() throws Exception {
