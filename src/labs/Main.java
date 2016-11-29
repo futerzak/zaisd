@@ -1,5 +1,6 @@
 package labs;
 
+import labs.Helpers.ReadFileHelper;
 import labs.lab01.*;
 import labs.lab02.WarshalFloydAlgorithm;
 import labs.lab03.Edge;
@@ -8,22 +9,25 @@ import labs.lab03.Vertex;
 import labs.lab04.HuffmanAlgorithm;
 import labs.lab04.SaveFileHelper;
 import labs.lab05.Matrix;
-import labs.lab05.ParallelMatricesMultiplicationAlgorithm;
-import labs.lab05.ReadFileHelper;
+import labs.lab05.ReadMatrices;
 import labs.lab05.SequentialMatricesMultiplicationAlgorithm;
 import labs.lab06.ComputePi;
+import labs.lab07.GrahamAlgorithmMain;
+import labs.lab07.Point2D;
 
 import java.io.*;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 
 public class Main {
     public static void main(String[] args) throws NumberFormatException, IOException {
 
-        chooseAlgorithm();
-    }
+    chooseAlgorithm();
+	}
 
     private static void chooseAlgorithm() {
 
@@ -33,17 +37,18 @@ public class Main {
         System.out.println("3 - Algorytm Huffmana");
         System.out.println("4 - Mnożenie macierzy");
         System.out.println("5 - Obliczanie PI");
+        System.out.println("6 - Algorytm Grahama");
         System.out.print("Wybór: ");
 
         Scanner in = new Scanner(System.in);
-        String choose = in.nextLine();
+        String choose =  in.nextLine();
 
         System.out.println("Czekaj ...");
         switch (choose) {
             case "1":
                 /* Warshal-Floyd */
                 warshalFloydRun("src/grafWarshalaFloyda.txt");
-                /* end Warshal-Floyd */
+		        /* end Warshal-Floyd */
                 break;
             case "2":
                 /* Ford-Fulkerson */
@@ -65,13 +70,7 @@ public class Main {
                 break;
             case "4":
                 /* Matrix Multiplication */
-                try {
-                    matrixMultiplicationRun();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                matrixMultiplicationRun();
                 /* end Matrix Multiplication */
                 break;
             case "5":
@@ -83,8 +82,11 @@ public class Main {
                 }
                 /* end PI Computing */
                 break;
-
-
+            case "6":
+                /* Graham */
+                grahamAlgorithmRun();
+                /* end Graham */
+                break;
             default:
                 System.out.println("Dokonano złego wyboru!");
                 chooseAlgorithm();
@@ -92,16 +94,52 @@ public class Main {
         }
     }
 
+    private static void grahamAlgorithmRun() {
+
+	    /* read file */
+        String filePath = "src/punktyPrzykladowe.csv";
+
+        String data = ReadFileHelper.readFile(filePath);
+
+        int rowsNumber = data.split("\n").length;
+        int columnsNumber = data.split("\n")[0].split(",").length;
+
+        double[][] dataArray = new double[rowsNumber][columnsNumber];
+
+        int row=0, column=0;
+        for (String rowString : data.split("\n")) {
+            column=0;
+            for(String unitString : rowString.split(",")) {
+                dataArray[row][column++] = Double.parseDouble(unitString);
+            }
+            row++;
+        }
+        /* end read file */
+
+        Point2D[] points = new Point2D[rowsNumber];
+
+        for (int i = 0; i < rowsNumber; i++)
+        {
+            points[i] = new Point2D(dataArray[i][0], dataArray[i][1]);
+        }
+
+        GrahamAlgorithmMain graham = new GrahamAlgorithmMain(points);
+
+        System.out.println("Otoczka wypukła zbioru S:");
+        for (Point2D p : graham.hull())
+            System.out.println(p);
+    }
+
     private static void computingPiRun() throws Exception {
 
         int[] n = new int[4];
-        for (int i = 0; i < 4; i++) {
-            n[i] = (int) Math.pow(10, i + 5);
+        for(int i=0;i<4;i++) {
+            n[i] = (int) Math.pow(10,i+5);
         }
 
-        for (int i = 0; i < n.length; i++) {
-            computePi(n[i], true);
-            computePi(n[i], false);
+        for (int aN : n) {
+            computePi(aN, true);
+            computePi(aN, false);
             System.out.println();
         }
         System.out.println("------------------------");
@@ -116,94 +154,60 @@ public class Main {
 
         startTime = System.currentTimeMillis();
 
-        if (parallel) {
+        if(parallel) {
 
             int procesorsNumber = Runtime.getRuntime().availableProcessors();
 
             ExecutorService pool = Executors.newFixedThreadPool(procesorsNumber);
             List<Future<Double>> list = new ArrayList<>();
 
-            int range = (int) Math.floor(n / procesorsNumber);
+            int range = (int) Math.floor(n/procesorsNumber);
 
-            for (int i = 0; i < n; i += range) {
-                Future<Double> future = pool.submit(new ComputePi(i, i + range, n));
+            for(int i=0;i<n;i+=range) {
+                Future<Double> future = pool.submit(new ComputePi(i,i+range, n));
                 list.add(future);
             }
 
-            for (Future<Double> future : list) {
+            for(Future<Double> future: list) {
                 result += future.get();
             }
 
         } else {
-            for (int i = 0; i <= n; i++) {
-                result += 4.0 / (1.0 + Math.pow(((2.0 * i) + 1.0) / (2.0 * n), 2));
+            for(int i=0;i<=n;i++){
+                result += 4.0 / (1.0 + Math.pow( ( (2.0*i) + 1.0) / (2.0 * n), 2));
             }
         }
 
         endTime = System.currentTimeMillis();
 
-        String type = parallel ? "równoległego" : "sekwencyjnego";
-        System.out.println("Czas obliczenia " + type + " dla n=" + n + " wynosi: " + (endTime - startTime) + "ms");
+	    String type = parallel?"równoległego":"sekwencyjnego";
+	    System.out.println("Czas obliczenia " + type + " dla n="+ n +" wynosi: " + (endTime-startTime) + "ms");
         System.out.println("Wynik: " + result.toString());
 
     }
 
-    private static void matrixMultiplicationRun() throws ExecutionException, InterruptedException {
+    private static void matrixMultiplicationRun() {
         System.out.println("Trwa implementacja");
 
         System.out.println("Podaj liczbę macierzy do załadowania");
         Scanner in = new Scanner(System.in);
-        int number = in.nextInt();
+        int number =  in.nextInt();
         in.close();
 
-        List<Matrix> matrices = ReadFileHelper.readMatrices("src/sample-matrices.txt", number);
-
-        long startSexuence = System.currentTimeMillis();
-
-        SequentialMatricesMultiplicationAlgorithm sequentialMatricesMultiplicationAlgorithm = new SequentialMatricesMultiplicationAlgorithm(matrices);
-        sequentialMatricesMultiplicationAlgorithm.run().show();
-
-        long endSequence = System.currentTimeMillis();
-        long resultSequence = endSequence - startSexuence;
-        System.out.println("Czas wykonywania sekwencyjnego: " + resultSequence + "ms");
-
-
-        int matricesNumber = matrices.size();
-        int processorsNumber = Runtime.getRuntime().availableProcessors();
-        int threadNumber = (int) Math.floor(matricesNumber / processorsNumber);
-
-
-        ExecutorService pool = Executors.newFixedThreadPool(processorsNumber);
-
-        List<Future<Matrix>> resultMatrixList = new ArrayList<>();
-        List<Matrix> matricesStack = new Stack<>();
-
-        long startParralel = System.currentTimeMillis();
-
-        for (int i = 0; i < matricesNumber; i += threadNumber) {
-            if (i + threadNumber >= matricesNumber && matricesNumber % processorsNumber != 0) {
-                threadNumber = matricesNumber % processorsNumber;
-            }
-            Future<Matrix> resolvedMatrix = pool.submit(new ParallelMatricesMultiplicationAlgorithm(matrices, i, i + threadNumber));
-
-            resolvedMatrix.get();
-            resultMatrixList.add(resolvedMatrix);
-
-            for (Future<Matrix> resultMatrix : resultMatrixList) {
-                matricesStack.add(resultMatrix.get());
-            }
-
-            while (matricesStack.size() != 1) {
-                Matrix temp = matricesStack.remove(0).times(matricesStack.remove(0));
-                matricesStack.add(temp);
-            }
+        ArrayList<Matrix> matrices = ReadMatrices.readMatrices("src/sample-matrices.txt", number);
+        int test = 0;
+        for (Matrix m: matrices) {
+            m.show();
+            System.out.println("macierz "+ test++ + " ------------------------------");
         }
 
 
-        long endParallel = System.currentTimeMillis();
-        long resultParallel = endParallel - startParralel;
+        SequentialMatricesMultiplicationAlgorithm matricesMultiplicationAlgorithm = new SequentialMatricesMultiplicationAlgorithm(matrices);
 
-        System.out.println("Czas wykonywania równoległego: " + resultParallel + "ms");
+        matricesMultiplicationAlgorithm.run().show();
+
+
+
     }
 
     private static void huffman(String sourceTextContent, String compressionFile, String decompressionFile) {
@@ -218,18 +222,18 @@ public class Main {
 
 
         String compressedString = huffmanAlgorithm.getCompressedString();
-        System.out.println("Kompresja:\n" + compressedString);
-        try {
+		System.out.println("Kompresja:\n" + compressedString);
+		try {
             SaveFileHelper.save(compressionFile, huffmanAlgorithm.getCompressedString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-        int l_origin = sourceTextContent.length() * 8;
-        int l_compressed = compressedString.length();
-        System.out.print("Stopień kompresji: " + (float) (l_origin - l_compressed) / l_origin);
+		int l_origin = sourceTextContent.length()*8;
+		int l_compressed = compressedString.length();
+		System.out.print("Stopień kompresji: " + (float)(l_origin - l_compressed) / l_origin);
 
-        huffmanAlgorithm.decompress();
+		huffmanAlgorithm.decompress();
 
         try {
             SaveFileHelper.save(decompressionFile, huffmanAlgorithm.getDecompressedString());
@@ -237,45 +241,45 @@ public class Main {
             e.printStackTrace();
         }
     }
+	
+	private static void warshalFloyd(GraphInterface g, GraphInterface g2) {
+		int startNode = 1;
+		int endNode = 20;
+		
+		WarshalFloydAlgorithm fW = new WarshalFloydAlgorithm();
+		WarshalFloydAlgorithm fW2 = new WarshalFloydAlgorithm();
+		
+		
+		long startTimeMatrix = System.currentTimeMillis();
+		int[][] D = fW.warshalFloyd(g);
+		LinkedList<Integer> p = fW.getPath(startNode, endNode);
+		long endTimeMatrix = System.currentTimeMillis();
+		
+		
+		long startTimeList = System.currentTimeMillis();
+		int[][] D2 = fW2.warshalFloyd(g2);
+		LinkedList<Integer> p2 = fW2.getPath(startNode, endNode);
+		long endTimeList = System.currentTimeMillis();
+		
+		long timeMatrix = endTimeMatrix - startTimeMatrix;
+		long timeList = endTimeList - startTimeList;
+		
+		g.printGraph();
+		
+		System.out.println("---MACIERZ---");
+		System.out.println("czas: " + timeMatrix + "ms");
+		System.out.println("odległość: " + D[startNode][endNode]);
+		System.out.println("ścieżka: " + p);
+		
+		System.out.println("----LISTA----");
+		System.out.println("czas: " + timeList + "ms");
+		System.out.println("odległość: " + D2[startNode][endNode]);
+		System.out.println("ścieżka: " + p2);
+		
+		System.out.println("R = Tlista / Tmacierz = " + (float) timeList/timeMatrix);
+	}
 
-    private static void warshalFloyd(GraphInterface g, GraphInterface g2) {
-        int startNode = 1;
-        int endNode = 20;
-
-        WarshalFloydAlgorithm fW = new WarshalFloydAlgorithm();
-        WarshalFloydAlgorithm fW2 = new WarshalFloydAlgorithm();
-
-
-        long startTimeMatrix = System.currentTimeMillis();
-        int[][] D = fW.warshalFloyd(g);
-        LinkedList<Integer> p = fW.getPath(startNode, endNode);
-        long endTimeMatrix = System.currentTimeMillis();
-
-
-        long startTimeList = System.currentTimeMillis();
-        int[][] D2 = fW2.warshalFloyd(g2);
-        LinkedList<Integer> p2 = fW2.getPath(startNode, endNode);
-        long endTimeList = System.currentTimeMillis();
-
-        long timeMatrix = endTimeMatrix - startTimeMatrix;
-        long timeList = endTimeList - startTimeList;
-
-        g.printGraph();
-
-        System.out.println("---MACIERZ---");
-        System.out.println("czas: " + timeMatrix + "ms");
-        System.out.println("odległość: " + D[startNode][endNode]);
-        System.out.println("ścieżka: " + p);
-
-        System.out.println("----LISTA----");
-        System.out.println("czas: " + timeList + "ms");
-        System.out.println("odległość: " + D2[startNode][endNode]);
-        System.out.println("ścieżka: " + p2);
-
-        System.out.println("R = Tlista / Tmacierz = " + (float) timeList / timeMatrix);
-    }
-
-    private static void warshalFloydRun(String path) {
+	private static void warshalFloydRun(String path) {
 
         GraphInterface g = null;
         GraphInterface g2 = null;
@@ -290,9 +294,9 @@ public class Main {
         warshalFloyd(g, g2);
     }
 
-    private static void fordFulkersonRun(String path) {
+	private static void fordFulkersonRun(String path) {
 
-        GraphfInterface matrixGraph = null, listGraph = null;
+        GraphfInterface  matrixGraph = null, listGraph = null;
 
         matrixGraph = new MatrixfGraph();
 
@@ -307,7 +311,7 @@ public class Main {
         String line = "";
         int i = 1;
         try {
-            for (line = buffer.readLine(); line != null; line = buffer.readLine()) {
+            for (line = buffer != null ? buffer.readLine() : null; line != null; line = buffer.readLine()) {
                 String[] t = line.split(";");
 
                 Vertex initialVertex = new Vertex().setVertexId(Integer.parseInt(t[0].trim()));
@@ -326,7 +330,7 @@ public class Main {
         }
 
         FordFulkerson fordFulkerson = new FordFulkerson(matrixGraph.getVertexCount());
-        int maxFlow = fordFulkerson.fordFulkerson(matrixGraph, 109, 609);
-        System.out.println("Max flow 109 -> 609: " + maxFlow);
+		int maxFlow = fordFulkerson.fordFulkerson(matrixGraph, 109, 609);
+		System.out.println("Max flow 109 -> 609: " + maxFlow);
     }
 }
