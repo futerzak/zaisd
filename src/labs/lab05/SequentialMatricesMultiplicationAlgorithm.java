@@ -1,19 +1,15 @@
 package labs.lab05;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class SequentialMatricesMultiplicationAlgorithm {
 
     private Matrix result;
-    private ArrayList<Matrix> matrices;
+    private List<Matrix> matrices;
 
-    public SequentialMatricesMultiplicationAlgorithm(ArrayList<Matrix> matrices) {
+    public SequentialMatricesMultiplicationAlgorithm(List<Matrix> matrices) {
         this.result = matrices.get(0);
         this.matrices = matrices;
-    }
-
-    public void selfReturn(Matrix nextMatrix) {
-        this.result  = this.result.times(nextMatrix);
     }
 
     public Matrix run() {
@@ -23,19 +19,4 @@ public class SequentialMatricesMultiplicationAlgorithm {
         return this.result;
     }
 
-    public Matrix getResult() {
-        return result;
-    }
-
-    public ArrayList<Matrix> getMatrices() {
-        return matrices;
-    }
-
-    public void setResult(Matrix result) {
-        this.result = result;
-    }
-
-    public void setMatrices(ArrayList<Matrix> matrices) {
-        this.matrices = matrices;
-    }
 }

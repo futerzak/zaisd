@@ -9,6 +9,7 @@ import labs.lab03.Vertex;
 import labs.lab04.HuffmanAlgorithm;
 import labs.lab04.SaveFileHelper;
 import labs.lab05.Matrix;
+import labs.lab05.ParallelMatricesMultiplicationAlgorithm;
 import labs.lab05.ReadMatrices;
 import labs.lab05.SequentialMatricesMultiplicationAlgorithm;
 import labs.lab06.ComputePi;
@@ -18,13 +19,11 @@ import labs.lab07.Point2D;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 
 public class Main {
-	public static void main(String[] args) throws NumberFormatException, IOException{
+    public static void main(String[] args) throws NumberFormatException, IOException {
 
     chooseAlgorithm();
 	}
@@ -70,7 +69,13 @@ public class Main {
                 break;
             case "4":
                 /* Matrix Multiplication */
-                matrixMultiplicationRun();
+                try {
+                    matrixMultiplicationRun();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 /* end Matrix Multiplication */
                 break;
             case "5":
@@ -186,28 +191,50 @@ public class Main {
 
     }
 
-    private static void matrixMultiplicationRun() {
-        System.out.println("Trwa implementacja");
-
+    private static void matrixMultiplicationRun() throws ExecutionException, InterruptedException {
         System.out.println("Podaj liczbę macierzy do załadowania");
         Scanner in = new Scanner(System.in);
         int number =  in.nextInt();
         in.close();
 
         ArrayList<Matrix> matrices = ReadMatrices.readMatrices("src/sample-matrices.txt", number);
-        int test = 0;
-        for (Matrix m: matrices) {
-            m.show();
-            System.out.println("macierz "+ test++ + " ------------------------------");
+
+        /* sequential */
+        SequentialMatricesMultiplicationAlgorithm sequentialMatricesMultiplicationAlgorithm = new SequentialMatricesMultiplicationAlgorithm(matrices);
+
+        long startTime = System.currentTimeMillis();
+        sequentialMatricesMultiplicationAlgorithm.run();
+        long stopTime = System.currentTimeMillis();
+        System.out.println("Czas mnożenia " + number + " macierzy sekwencyjnie wynosi: " + (stopTime-startTime) + "ms");
+        /* end sequential */
+
+        int procesorsNumber = Runtime.getRuntime().availableProcessors();
+        ExecutorService pool = Executors.newFixedThreadPool(procesorsNumber);
+
+        List<Future<Matrix>> list = new ArrayList<>();
+        List<Matrix> l = new ArrayList<>();
+
+        startTime = System.currentTimeMillis();
+
+        int index=0;
+        for(int i=0;i<number;i+=number/procesorsNumber) {
+            Callable<Matrix> callable = new ParallelMatricesMultiplicationAlgorithm(matrices, i, i+number/procesorsNumber);
+            Future<Matrix> future = pool.submit(callable);
+            list.add(future);
         }
 
+        index=0;
+        for(Future<Matrix> s : list) {
+            l.add(index++, s.get());
+        }
 
-        SequentialMatricesMultiplicationAlgorithm matricesMultiplicationAlgorithm = new SequentialMatricesMultiplicationAlgorithm(matrices);
+        Callable<Matrix> callable = new ParallelMatricesMultiplicationAlgorithm(l, 0, procesorsNumber);
+        pool.submit(callable);
 
-        matricesMultiplicationAlgorithm.run().show();
-
-
-
+        stopTime = System.currentTimeMillis();
+        System.out.println("Czas mnożenia " + number + " macierzy równolegle wynosi: " + (stopTime-startTime) + "ms");
+        /* end time measurement */
+        System.exit(0);
     }
 
     private static void huffman(String sourceTextContent, String compressionFile, String decompressionFile) {
