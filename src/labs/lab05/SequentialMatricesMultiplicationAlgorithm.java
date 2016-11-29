@@ -2,12 +2,12 @@ package labs.lab05;
 
 import java.util.ArrayList;
 
-public class SequenceMatricesMultiplicationAlgorithm {
+public class SequentialMatricesMultiplicationAlgorithm {
 
     private Matrix result;
     private ArrayList<Matrix> matrices;
 
-    public SequenceMatricesMultiplicationAlgorithm(ArrayList<Matrix> matrices) {
+    public SequentialMatricesMultiplicationAlgorithm(ArrayList<Matrix> matrices) {
         this.result = matrices.get(0);
         this.matrices = matrices;
     }

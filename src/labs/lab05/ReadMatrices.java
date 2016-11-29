@@ -1,12 +1,12 @@
 package labs.lab05;
 
-import java.io.File;
+import labs.Helpers.ReadFileHelper;
+
 import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Scanner;
 
-public class ReadFileHelper {
+public class ReadMatrices {
     public static ArrayList<Matrix> readMatrices(String filePath, int number) {
 
         ArrayList<Matrix> matrices = null;
@@ -27,18 +27,13 @@ public class ReadFileHelper {
 
     private static ArrayList<Matrix> getData(String filePath) throws FileNotFoundException {
 
-        String data = "";
-        try {
-            data = new Scanner(new File(filePath)).useDelimiter("\\A").next();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        String data = ReadFileHelper.readFile(filePath);
 
         ArrayList<Matrix> matricesArray = new ArrayList<>();
         int row=0, column=0;
 
-        for (String matricesString : data.split("\r\n\r\n")) {
-            String[] rowsArray = matricesString.split("\r\n");
+        for (String matricesString : data.split("\n\n")) {
+            String[] rowsArray = matricesString.split("\n");
             String[] firstColumnArray = rowsArray[0].split(";");
 
             BigDecimal[][] matrixData = new BigDecimal[rowsArray.length][firstColumnArray.length];
